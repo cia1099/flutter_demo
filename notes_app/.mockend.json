@@ -1,0 +1,22 @@
+{
+    "Post":{
+        "title": {"string": {}},
+        "createdAt": {
+            "dateTime": {
+              "min": "2019-01-01T00:00:00Z",
+              "max": "2022-12-31T23:59:59Z"
+            }
+        },
+        "items": {
+            "loremWords": {"minLength": 3, "maxLength": 5}
+        },
+        "description": {
+            "loremSentences": {"minLength": 15, "maxLength": 50}
+        },
+        "photo": {
+            "regexp": "https://picsum\\.photos/seed/[0-9]{5}/640/480"
+        },
+        "got_items": {"int": {"min": 0, "max": 5}},
+        "icon_code": {"regexp": "0xf[0-9a-f]{3}"}
+    }
+}

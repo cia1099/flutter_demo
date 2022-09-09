@@ -1,22 +1,35 @@
 {
-    "Post":{
-        "title": {"string": {}},
-        "createdAt": {
-            "dateTime": {
-              "min": "2019-01-01T00:00:00Z",
-              "max": "2022-12-31T23:59:59Z"
-            }
-        },
-        "items": {
-            "loremWords": {"minLength": 3, "maxLength": 5}
-        },
-        "description": {
-            "loremSentences": {"minLength": 15, "maxLength": 50}
-        },
-        "photo": {
-            "regexp": "https://picsum\\.photos/seed/[0-9]{5}/640/480"
-        },
-        "gotItems": {"int": {"min": 0, "max": 5}},
-        "iconCode": {"regexp": "0xf[0-9a-f]{3}"}
+    "Post": {
+      "cover": {
+        "regexp": "https://picsum\\.photos/seed/[0-9]{5}/1920/270"
+      },
+      "title": {
+        "loremWords": {
+          "minLength": 5,
+          "maxLength": 20
+        }
+      },
+      "body": {
+        "loremParagraphs": {
+          "minLength": 10,
+          "maxLength": 100
+        }
+      },
+      "tag": {
+        "string": [
+          "one",
+          "two",
+          "three"
+        ]
+      },
+      "isDraft": {
+        "boolean": {}
+      },
+      "createdAt": {
+        "dateTime": {
+          "min": "2010-01-01T00:00:00Z",
+          "max": "2020-12-31T23:59:59Z"
+        }
+      }
     }
-}
+  }

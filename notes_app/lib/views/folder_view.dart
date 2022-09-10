@@ -41,7 +41,7 @@ class FolderView extends StatelessWidget {
                           )
                         : index == 1
                             ? Text(
-                                'Freelancer',
+                                'Quotes',
                                 style: Theme.of(context).textTheme.titleLarge,
                               )
                             : index == 2
@@ -59,7 +59,7 @@ class FolderView extends StatelessWidget {
                                       )
                                     : index == 4
                                         ? Text(
-                                            'Quotes',
+                                            'Freelancer',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleLarge,

@@ -20,29 +20,46 @@ class AllView extends StatefulWidget {
 }
 
 class _AllViewState extends State<AllView> {
-  late final List<Note> allNotes;
+  List<Note>? allNotes;
   final currNote = <Note>[];
+
   @override
   void initState() {
-    // http.get(Uri.parse(AllView.url)).then((value) {
-    //   allNotes = json.decode(value.body);
-    // });
-    Future.delayed(Duration.zero, () async {
-      final response = await http.get(Uri.parse(AllView.url));
-      allNotes = json.decode(response.body);
+    http.get(Uri.parse(AllView.url)).then((response) {
+      allNotes = json
+          .decode(response.body)
+          .map<Note>((obj) => Note.fromJson(obj))
+          .toList();
+      for (int i = 0; i < 3; i++) {
+        currNote.add(allNotes![Random().nextInt(allNotes!.length)]);
+      }
+      setState(() {});
     });
-    for (int i = 0; i < 3; i++) {
-      currNote.add(allNotes[Random().nextInt(allNotes.length)]);
-    }
+    // Future.delayed(Duration.zero, () async {
+    //   final response = await http.get(Uri.parse(AllView.url));
+    //   allNotes = json
+    //       .decode(response.body)
+    //       .map<Note>((obj) => Note.fromJson(obj))
+    //       .toList();
+    //   for (int i = 0; i < 3; i++) {
+    //     currNote.add(allNotes[Random().nextInt(allNotes.length)]);
+    //   }
+    //   currNum.value = currNote.length;
+    // });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: allNotes == null
+            ? null
+            : () {
+                setState(() {
+                  currNote.add(allNotes![Random().nextInt(allNotes!.length)]);
+                });
+              },
         child: const Icon(
           FontAwesomeIcons.notesMedical,
           color: AppColors.white,
@@ -59,23 +76,19 @@ class _AllViewState extends State<AllView> {
               final note = currNote[i];
               late List<Widget> childrens;
               if (note.goal == "Daily Life") {
-                childrens =
-                    createPaintList(note.photo, note.title, note.description);
+                childrens = note.createPaintList();
               } else if (note.getItems < note.items.length &&
                   note.goal != "Quote") {
-                childrens = createCheckList(
-                    context, note.title, note.items, note.getItems);
+                childrens = note.createCheckList(context);
               } else {
-                childrens =
-                    createQuoteList(context, note.title, note.description);
+                childrens = note.createQuoteList(context);
               }
               return AnimationConfiguration.staggeredGrid(
                   position: i,
                   columnCount: 2,
                   child: ScaleAnimation(
                     child: FadeInAnimation(
-                        child: NoteCard(
-                      note: note,
+                        child: CurvedBox(
                       padding:
                           note.goal != "Daily Life" ? null : EdgeInsets.zero,
                       children: childrens,
@@ -87,8 +100,8 @@ class _AllViewState extends State<AllView> {
   }
 }
 
-class _ListTileRow extends StatelessWidget {
-  const _ListTileRow({Key? key, required this.isChecked, required this.text})
+class ListTileRow extends StatelessWidget {
+  const ListTileRow({Key? key, required this.isChecked, required this.text})
       : super(key: key);
   final String text;
   final bool isChecked;

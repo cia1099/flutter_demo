@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:notes_app_ui_speed_code/app_colors.dart';
-import 'package:notes_app_ui_speed_code/views/landing_view.dart';
+import 'package:notes_app/app_colors.dart';
+import 'package:notes_app/views/landing_view.dart';
 
 void main() {
   runApp(const MyApp());

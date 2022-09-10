@@ -4,8 +4,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
-import 'package:notes_app_ui_speed_code/app_colors.dart';
-import 'package:notes_app_ui_speed_code/views/curved_box.dart';
+import 'package:notes_app/app_colors.dart';
+import 'package:notes_app/views/curved_box.dart';
 
 class FolderView extends StatelessWidget {
   const FolderView({Key? key}) : super(key: key);

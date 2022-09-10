@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app_ui_speed_code/app_colors.dart';
-import 'package:notes_app_ui_speed_code/views/home_view.dart';
-import 'package:notes_app_ui_speed_code/views/note_widget.dart';
+import 'package:notes_app/app_colors.dart';
+import 'package:notes_app/views/home_view.dart';
+import 'package:notes_app/views/note_widget.dart';
 
 class LandingView extends StatelessWidget {
   const LandingView({Key? key}) : super(key: key);

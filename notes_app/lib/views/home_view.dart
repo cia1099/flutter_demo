@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app_ui_speed_code/app_colors.dart';
-import 'package:notes_app_ui_speed_code/views/all_view.dart';
-import 'package:notes_app_ui_speed_code/views/folder_view.dart';
+import 'package:notes_app/app_colors.dart';
+import 'package:notes_app/views/all_view.dart';
+import 'package:notes_app/views/folder_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);

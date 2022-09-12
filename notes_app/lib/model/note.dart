@@ -18,7 +18,7 @@ class Note {
   Note(this.id, this.title, this.photo, this.items, this.iconCode,
       this.description, this.date, this.getItems, this.goal);
 
-  factory Note.fromJson(Map<String, dynamic> obj) {
+  factory Note.fromDocument(Map<String, dynamic> obj) {
     List<String> items =
         obj["items"].substring(0, obj["items"].length - 1).split(" ");
     items.removeWhere((item) => item.length < 3);

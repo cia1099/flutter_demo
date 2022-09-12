@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -10,7 +9,7 @@ import 'package:notes_app/app_colors.dart';
 import 'package:notes_app/model/note.dart';
 import 'package:notes_app/views/curved_box.dart';
 import 'package:http/http.dart' as http;
-import 'package:notes_app/views/note_card.dart';
+import 'package:provider/provider.dart';
 
 class AllView extends StatefulWidget {
   const AllView({Key? key}) : super(key: key);
@@ -21,17 +20,19 @@ class AllView extends StatefulWidget {
 
 class _AllViewState extends State<AllView> {
   List<Note>? allNotes;
-  final currNote = <Note>[];
+  late List<Note> currNote;
 
   @override
   void initState() {
     http.get(Uri.parse(AllView.url)).then((response) {
       allNotes = json
           .decode(response.body)
-          .map<Note>((obj) => Note.fromJson(obj))
+          .map<Note>((obj) => Note.fromDocument(obj))
           .toList();
-      for (int i = 0; i < 3; i++) {
-        currNote.add(allNotes![Random().nextInt(allNotes!.length)]);
+      if (currNote.isEmpty) {
+        for (int i = 0; i < 3; i++) {
+          currNote.add(allNotes![Random().nextInt(allNotes!.length)]);
+        }
       }
       setState(() {});
     });
@@ -51,6 +52,8 @@ class _AllViewState extends State<AllView> {
 
   @override
   Widget build(BuildContext context) {
+    currNote = context.read<List<Note>>();
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: allNotes == null

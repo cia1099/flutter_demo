@@ -44,8 +44,11 @@ class LandingView extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
+              //ref. https://stackoverflow.com/questions/67812878/navigation-within-tab-view-body-flutter
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const HomeView(),
+                builder: (context) => HomeView(
+                  navKey: GlobalKey<NavigatorState>(),
+                ),
               ));
             },
             child: Text(

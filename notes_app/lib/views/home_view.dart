@@ -5,7 +5,8 @@ import 'package:notes_app/views/all_view.dart';
 import 'package:notes_app/views/folder_view.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+  const HomeView({Key? key, required this.navKey}) : super(key: key);
+  final GlobalKey<NavigatorState> navKey;
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -87,8 +88,18 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ],
               )),
-          body: const TabBarView(
-            children: [AllView(), FolderView()],
+          body: TabBarView(
+            children: [
+              const AllView(),
+              Navigator(
+                key: widget.navKey,
+                onGenerateRoute: (_) => MaterialPageRoute(
+                  builder: (_) => FolderView(
+                    navKey: widget.navKey,
+                  ),
+                ),
+              )
+            ],
           ),
         ));
   }

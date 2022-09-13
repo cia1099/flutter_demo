@@ -12,8 +12,9 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class AllView extends StatefulWidget {
-  const AllView({Key? key}) : super(key: key);
+  const AllView({Key? key, this.filter}) : super(key: key);
   static const url = "https://mockend.com/cia1099/temp_demo/posts";
+  final String? filter;
   @override
   State<AllView> createState() => _AllViewState();
 }
@@ -53,21 +54,26 @@ class _AllViewState extends State<AllView> {
   @override
   Widget build(BuildContext context) {
     currNote = context.read<List<Note>>();
+    if (widget.filter != null) {
+      // below assignment will clone a new list to currNote, and no longer provider.
+      currNote =
+          currNote.where((element) => element.goal == widget.filter).toList();
+    }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: allNotes == null
-            ? null
-            : () {
+      floatingActionButton: allNotes == null
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
                 setState(() {
                   currNote.add(allNotes![Random().nextInt(allNotes!.length)]);
                 });
               },
-        child: const Icon(
-          FontAwesomeIcons.notesMedical,
-          color: AppColors.white,
-        ),
-      ),
+              child: const Icon(
+                FontAwesomeIcons.notesMedical,
+                color: AppColors.white,
+              ),
+            ),
       body: AnimationLimiter(
         child: MasonryGridView.count(
             padding: const EdgeInsets.all(16),

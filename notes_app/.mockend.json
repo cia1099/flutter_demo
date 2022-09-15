@@ -1,6 +1,6 @@
 {
     "Post":{
-        "title": {"string": {}},
+        "title": {"regexp": "[A-Z][a-z]{5,15}"},
         "createdAt": {
             "dateTime": {
               "min": "2019-01-01T00:00:00Z",
@@ -8,15 +8,18 @@
             }
         },
         "items": {
-            "loremWords": {"minLength": 3, "maxLength": 5}
+            "loremSentences": {"minLength": 15, "maxLength": 50}
         },
         "description": {
-            "loremSentences": {"minLength": 15, "maxLength": 50}
+            "loremParagraphs": {"minLength": 40, "maxLength": 120}
         },
         "photo": {
             "regexp": "https://picsum\\.photos/seed/[0-9]{5}/640/480"
         },
-        "gotItems": {"int": {"min": 0, "max": 5}},
-        "iconCode": {"regexp": "0xf[0-9a-f]{3}"}
+        "getItems": {"int": {"min": 0, "max": 5}},
+        "iconCode": {"regexp": "0xf[a-f0-9]{3}"},
+        "goal": {
+            "string": ["My Targets", "Quote", "ToDo", "Daily Life"]
+        }
     }
 }

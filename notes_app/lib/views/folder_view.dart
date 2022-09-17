@@ -29,9 +29,8 @@ class FolderView extends StatelessWidget {
           itemCount: 5,
           itemBuilder: (context, index) => InkWell(
                 onTap: () => navKey.currentState!.push(MaterialPageRoute(
-                    builder: ((context) => AllView(
-                          filter: filters[index],
-                        )))),
+                    settings: RouteSettings(arguments: filters[index]),
+                    builder: ((context) => const AllView()))),
                 child: CurvedBox(children: [
                   Lottie.asset('assets/folder.json', repeat: false),
                   const SizedBox(

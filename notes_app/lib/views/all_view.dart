@@ -35,6 +35,8 @@ class _AllViewState extends State<AllView> {
         }
       }
       setState(() {});
+    }).catchError((_) {
+      debugPrint("http error");
     });
     // Future.delayed(Duration.zero, () async {
     //   final response = await http.get(Uri.parse(AllView.url));

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_web_frame/flutter_web_frame.dart';
+import 'package:tantan_app/widget/chat_list.dart';
 
 import 'widget/tinder_card.dart';
 
@@ -52,19 +53,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   List<Widget> _widgetOptions = <Widget>[
     TinderCard(),
     Text(
-      'Index 1: Business',
+      'Index 1: School',
       style: optionStyle,
     ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    ChatList(),
     Text(
       'Index 3: School',
       style: optionStyle,
@@ -78,12 +76,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "TANTAN",
-          style: TextStyle(color: Theme.of(context).primaryColor),
-        ),
-      ),
+      appBar: (_selectedIndex != 0 && _selectedIndex != 2)
+          ? AppBar(
+              title: Text(
+                "TANTAN",
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+            )
+          : null,
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

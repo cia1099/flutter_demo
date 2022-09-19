@@ -39,6 +39,7 @@ dependencies:
   flutter_web_frame: ^0.0.3
   swipable_stack: ^2.0.0
   bordered_text: ^2.0.0
+  badges: ^2.0.3
 
 dev_dependencies:
   flutter_test:

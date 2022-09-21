@@ -40,6 +40,7 @@ dependencies:
   swipable_stack: ^2.0.0
   bordered_text: ^2.0.0
   badges: ^2.0.3
+  readmore: ^2.2.0
 
 dev_dependencies:
   flutter_test:

@@ -54,15 +54,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 1;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   List<Widget> _widgetOptions = <Widget>[
     TinderCard(),
-    Text(
-      'Index 1: School',
-      style: optionStyle,
-    ),
+    GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemCount: 20,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            elevation: 2,
+            color: index % 3 == 0 ? Colors.amber : Colors.green,
+            child: Center(child: Text('$index')),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12))),
+          );
+        }),
     ChatList(),
     Friendship(),
     Text(

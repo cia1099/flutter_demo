@@ -9,16 +9,19 @@ class DestinationCarousel extends StatefulWidget {
   _DestinationCarouselState createState() => _DestinationCarouselState();
 }
 
-class _DestinationCarouselState extends State<DestinationCarousel> {
+class _DestinationCarouselState extends State<DestinationCarousel>
+    with TickerProviderStateMixin {
   final String imagePath = 'assets/images/';
 
-  final CarouselController _controller = CarouselController();
+  late CarouselController _controller; // = CarouselController();
 
   List _isHovering = [false, false, false, false, false, false, false];
   List _isSelected = [true, false, false, false, false, false, false];
 
   int _current = 0;
   List<Widget>? txtSliders;
+  late Animation<double> _animation;
+  late AnimationController _aniController;
 
   final List<String> images = [
     'assets/images/asia.jpg',
@@ -38,14 +41,37 @@ class _DestinationCarouselState extends State<DestinationCarousel> {
     'ANTARCTICA',
   ];
 
+  @override
+  void initState() {
+    _aniController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 4100))
+          ..forward();
+    _animation = Tween<double>(begin: 2.0, end: 1.0).animate(
+        CurvedAnimation(parent: _aniController, curve: Curves.easeInOutCirc));
+    _controller = CarouselController();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _aniController.dispose();
+    super.dispose();
+  }
+
   List<Widget> generateImageTiles(screenSize) {
     return images
         .map(
           (element) => ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
-              element,
-              // fit: BoxFit.cover,
+            child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) =>
+                  Transform.scale(child: child, scale: _animation.value),
+              child: Image.asset(
+                element,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         )
@@ -97,8 +123,10 @@ class _DestinationCarouselState extends State<DestinationCarousel> {
         Center(
           child: SizedBox(
             width: screenSize.width * 3 / 4,
-            child:
-                AspectRatio(aspectRatio: 16 / 9, child: imageSliders[_current]),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: imageSliders[_current],
+            ),
           ),
         ),
         CarouselSlider(
@@ -123,6 +151,7 @@ class _DestinationCarouselState extends State<DestinationCarousel> {
                   }
                 }
               });
+              _aniController.forward(from: 0);
             },
           ),
           carouselController: _controller,

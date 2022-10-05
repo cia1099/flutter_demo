@@ -15,7 +15,7 @@ class DestinationHeading extends StatelessWidget {
         ? Container(
             padding: EdgeInsets.only(
               top: screenSize.height / 20,
-              bottom: screenSize.height / 20,
+              // bottom: screenSize.height / 20,
             ),
             width: screenSize.width,
             // color: Colors.black,
@@ -32,7 +32,7 @@ class DestinationHeading extends StatelessWidget {
         : Container(
             padding: EdgeInsets.only(
               top: screenSize.height / 10,
-              bottom: screenSize.height / 15,
+              // bottom: screenSize.height / 15,
             ),
             width: screenSize.width,
             // color: Colors.black,

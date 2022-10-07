@@ -1,8 +1,18 @@
+import 'dart:isolate';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:explore/widgets/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+class DecodeParam {
+  final ByteData byteData;
+  final SendPort sendPort;
+
+  DecodeParam(this.byteData, this.sendPort);
+}
 
 class DestinationCarousel extends StatefulWidget {
   @override
@@ -60,23 +70,72 @@ class _DestinationCarouselState extends State<DestinationCarousel>
   }
 
   List<Widget> generateImageTiles(screenSize) {
-    return images
-        .map(
-          (element) => ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) =>
-                  Transform.scale(child: child, scale: _animation.value),
-              child: Image.asset(
-                element,
-                fit: BoxFit.cover,
-              ),
+    return images.map(
+      (element) {
+        return ClipRRect(
+          key: ValueKey<int>(images.indexWhere((item) => item == element)),
+          borderRadius: BorderRadius.circular(8.0),
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              if (_animation.value < 1.7 && _animation.value > 1.2) {
+                String filePath =
+                    element.substring(0, element.length - 4) + '_blur.jpg';
+                child = Image.asset(filePath);
+              }
+              return Transform.scale(child: child, scale: _animation.value);
+            },
+            child: Image.asset(
+              element,
+              fit: BoxFit.cover,
             ),
           ),
-        )
-        .toList();
+        );
+      },
+    ).toList();
   }
+
+  // List<Widget> generateImageTiles(screenSize) {
+  //   // var rp = ReceivePort();
+  //   return images.map((element) {
+  //     return ClipRRect(
+  //       borderRadius: BorderRadius.circular(8.0),
+  //       child: AnimatedBuilder(
+  //           animation: _animation,
+  //           builder: (context, child) {
+  //             return Transform.scale(child: child, scale: _animation.value);
+  //           },
+  //           child: FutureBuilder(
+  //             future: rootBundle.load(element),
+  //             builder: (context, snapshot) {
+  //               // futureData.then((data) {
+  //               // });
+  //               // rp.first.then((value) {
+  //               //   final mm = value as img.Image;
+  //               //   child = Image.memory(mm.getBytes());
+  //               // });
+  //               if (snapshot.connectionState != ConnectionState.done) {
+  //                 return Image.asset(
+  //                   element,
+  //                   fit: BoxFit.cover,
+  //                 );
+  //               }
+  //               final data = snapshot.data! as ByteData;
+  //               // Isolate.spawn<DecodeParam>((message) {
+  //               final src = img.decodeImage(data.buffer.asUint8List());
+  //               img.drawString(src!, img.arial_48, 520, 50, "Hello Thread");
+  //               // message.sendPort.send(src);
+  //               // }, DecodeParam(data, rp.sendPort));
+  //               return Image.memory(
+  //                 src.getBytes(format: img.Format.rgba),
+  //                 width: src.width.toDouble(),
+  //                 height: src.height.toDouble(),
+  //               );
+  //             },
+  //           )),
+  //     );
+  //   }).toList();
+  // }
 
   List<Widget> generateTextTiles(screenSize, ctx) {
     return places
@@ -125,7 +184,15 @@ class _DestinationCarouselState extends State<DestinationCarousel>
             width: screenSize.width * 3 / 4,
             child: AspectRatio(
               aspectRatio: 16 / 9,
-              child: imageSliders[_current],
+              child: AnimatedSwitcher(
+                  duration: Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) => SlideTransition(
+                        position: Tween<Offset>(
+                                begin: Offset(0, 1), end: Offset(0, 0))
+                            .animate(animation),
+                        child: child,
+                      ),
+                  child: imageSliders[_current]),
             ),
           ),
         ),

@@ -77,51 +77,55 @@ class _HomePageState extends State<HomePage> {
             ),
       drawer: ExploreDrawer(),
       body: WebScrollbar(
-        color: Colors.blueGrey,
+        color: Colors.red,
         backgroundColor: Colors.blueGrey.withOpacity(0.3),
         width: 10,
         heightFraction: 0.3,
         controller: _scrollController,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          physics: ClampingScrollPhysics(),
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    child: SizedBox(
-                      height: screenSize.height * 0.45,
-                      width: screenSize.width,
-                      child: Image.asset(
-                        'assets/images/cover.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      FloatingQuickAccessBar(screenSize: screenSize),
-                      Container(
-                        child: Column(
-                          children: [
-                            FeaturedHeading(
-                              screenSize: screenSize,
-                            ),
-                            FeaturedTiles(screenSize: screenSize)
-                          ],
+        //ref. https://stackoverflow.com/questions/67662141/flutter-how-to-hide-a-scrollbarthumb-in-scrollable-widgets-like-listview-build
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            physics: ClampingScrollPhysics(),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      child: SizedBox(
+                        height: screenSize.height * 0.45,
+                        width: screenSize.width,
+                        child: Image.asset(
+                          'assets/images/cover.jpg',
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ],
-                  )
-                ],
-              ),
-              // SizedBox(height: screenSize.height / 8),
-              DestinationHeading(screenSize: screenSize),
-              DestinationCarousel(),
-              SizedBox(height: screenSize.height / 10),
-              BottomBar(),
-            ],
+                    ),
+                    Column(
+                      children: [
+                        FloatingQuickAccessBar(screenSize: screenSize),
+                        Container(
+                          child: Column(
+                            children: [
+                              FeaturedHeading(
+                                screenSize: screenSize,
+                              ),
+                              FeaturedTiles(screenSize: screenSize)
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                // SizedBox(height: screenSize.height / 8),
+                DestinationHeading(screenSize: screenSize),
+                DestinationCarousel(),
+                SizedBox(height: screenSize.height / 10),
+                BottomBar(),
+              ],
+            ),
           ),
         ),
       ),

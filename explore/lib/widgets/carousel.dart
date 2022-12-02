@@ -53,14 +53,13 @@ class _DestinationCarouselState extends State<DestinationCarousel>
 
   @override
   void initState() {
+    super.initState();
     _aniController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 4100))
           ..forward();
     _animation = Tween<double>(begin: 2.0, end: 1.0).animate(
         CurvedAnimation(parent: _aniController, curve: Curves.easeInOutCirc));
     _controller = CarouselController();
-
-    super.initState();
   }
 
   @override

@@ -23,3 +23,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+`didChangeDependencies()`只有在創建Widget時，再完成`initState()`後會被呼叫，且能夠使用context。不會被`setState()`呼叫。但當改變Layout或屏幕大小時，`didChangeDependencies()`就會被再次呼叫。
+`build()`則是每次`setState()`都會被呼叫，用來渲染新畫面。

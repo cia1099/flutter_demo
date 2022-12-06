@@ -73,32 +73,24 @@ class HeartPainter extends CustomPainter {
     double height = size.height;
 
     final start = Offset(0.5 * width, height * 0.35);
-    final end = Offset(0.5 * width, 0.9 * height);
-    final cp1 = Offset(0.2 * width, height * 0.1);
-    final cp2 = Offset(-0.25 * width, height * 0.6);
-    final cp3 = Offset(1.25 * width, height * 0.6);
-    final cp4 = Offset(0.8 * width, height * 0.1);
 
-    final heartCurve = HeartCurve(size: size);
-    final current = heartCurve.transform(progress!.value);
-    final pointPaint = Paint()..color = Colors.deepOrangeAccent;
-    canvas.drawCircle(current, 7, pointPaint);
-
-    if (progress!.isCompleted || progress!.isDismissed) {
-      _timeLine.clear();
-    } else {
+    if (progress!.status == AnimationStatus.forward) {
       _timeLine.add(progress!.value);
+      canvas.drawPath(tripTimeLine(size, start), paintBorder);
+    } else if (progress!.status == AnimationStatus.reverse) {
+      canvas.drawPath(tripTimeLine(size, start), paintFill);
+      canvas.drawPath(tripTimeLine(size, start), paintBorder);
+      if (_timeLine.isNotEmpty) _timeLine.removeLast();
+    } else if (_timeLine.length > 1) {
+      canvas.drawPath(tripTimeLine(size, start), paintFill);
+      canvas.drawPath(tripTimeLine(size, start), paintBorder);
     }
 
-    if (_timeLine.isEmpty) {
-      Path path = Path();
-      path.moveTo(start.dx, start.dy);
-      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, end.dx, end.dy);
-      path.cubicTo(cp3.dx, cp3.dy, cp4.dx, cp4.dy, start.dx, start.dy);
-      canvas.drawPath(path, paintFill);
-      canvas.drawPath(path, paintBorder);
-    } else {
-      canvas.drawPath(tripTimeLine(size, start), paintBorder);
+    if (!progress!.isCompleted && !progress!.isDismissed) {
+      final heartCurve = HeartCurve(size: size);
+      final current = heartCurve.transform(progress!.value);
+      final pointPaint = Paint()..color = Colors.deepOrangeAccent;
+      canvas.drawCircle(current, 7, pointPaint);
     }
   }
 

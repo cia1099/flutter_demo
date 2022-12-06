@@ -87,7 +87,7 @@ class _AnimationDemoState extends State<AnimationDemo>
         Timer(widget.duration, () => _animationController.forward());
       }
     });
-    _animationController.forward(); //.repeat(reverse: true);
+    _animationController.forward();
   }
 
   @override

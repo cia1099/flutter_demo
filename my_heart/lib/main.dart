@@ -1,7 +1,9 @@
-import 'dart:async';
+import 'dart:ui' as ui show Image;
 
 import 'package:flutter/material.dart';
 import 'package:my_heart/heart.dart';
+import 'package:my_heart/utilts.dart';
+import 'package:scratcher/scratcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,74 +40,74 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: const Center(
-        // child: CustomPaint(
-        //   size: Size(880, 800),
-        //   painter: HeartPainter(
+      body: Center(
+        // child: HeartAnimation(
+        //     duration: Duration(seconds: 3),
         //     bodyColor: Color(0xFFF27788),
         //     borderColor: Color.fromARGB(255, 41, 17, 9),
         //     borderWith: 12,
+        //     size: Size(880, 800)),
+        // child: Scratcher(
+        //   brushSize: 30,
+        //   threshold: 50,
+        //   color: Colors.grey,
+        //   rebuildOnResize: false,
+        //   onChange: (value) => print("Scratch progress: $value%"),
+        //   onThreshold: () => print("Threshold reached, you won!"),
+        //   child: Container(
+        //     height: 400,
+        //     width: 440,
+        //     child: CustomPaint(
+        //       painter: HeartPainter(
+        //         bodyColor: Color(0xFFF27788),
+        //       ),
+        //     ),
         //   ),
         // ),
-        child:
-            AnimationDemo(duration: Duration(seconds: 3), size: Size(880, 800)),
+        child: FutureBuilder<ui.Image>(
+          future: dartDecodeImage("https://picsum.photos/300/300", context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator.adaptive();
+            }
+            return CustomPaint(
+              painter: TestPainter(
+                  image: snapshot.data!,
+                  wallColor: Theme.of(context).scaffoldBackgroundColor),
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class AnimationDemo extends StatefulWidget {
-  final Duration duration;
-  final Size size;
-  const AnimationDemo({
-    Key? key,
-    required this.duration,
-    required this.size,
-  }) : super(key: key);
+class TestPainter extends CustomPainter {
+  final ui.Image image;
+  Color? wallColor;
+
+  TestPainter({required this.image, this.wallColor});
 
   @override
-  State<AnimationDemo> createState() => _AnimationDemoState();
-}
+  void paint(Canvas canvas, Size size) {
+    double width = size.width;
+    double height = size.height;
+    final lt =
+        Offset(width / 2 - image.width / 2, height / 2 - image.height / 2);
+    canvas.drawImage(image, lt, Paint());
+    //ref. https://stackoverflow.com/questions/59626727/how-to-erase-clip-from-canvas-custompaint
+    canvas.saveLayer(Rect.largest, Paint());
+    canvas.drawRect(
+        Rect.fromLTWH(
+            lt.dx, lt.dy, image.width.toDouble(), image.height.toDouble()),
+        Paint()..color = wallColor ?? Colors.white);
+    final heartPatten =
+        heartGraph(Size(image.width.toDouble(), image.height.toDouble()));
 
-class _AnimationDemoState extends State<AnimationDemo>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
-    _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Timer(widget.duration, () => _animationController.reverse());
-      }
-      if (status == AnimationStatus.dismissed) {
-        Timer(widget.duration, () => _animationController.forward());
-      }
-    });
-    _animationController.forward();
+    canvas.drawPath(heartPatten, Paint()..blendMode = BlendMode.clear);
+    canvas.restore();
   }
 
   @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: HeartPainter(
-        progress: _animationController,
-        bodyColor: Color(0xFFF27788),
-        borderColor: Color.fromARGB(255, 41, 17, 9),
-        borderWith: 12,
-      ),
-      size: widget.size,
-    );
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

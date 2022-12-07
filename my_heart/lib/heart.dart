@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class HeartCurve extends Curve2D {
@@ -36,32 +38,95 @@ class HeartCurve extends Curve2D {
   }
 }
 
-class HeartPainter extends CustomPainter {
+class HeartAnimation extends StatefulWidget {
+  final Duration duration;
+  final Size size;
   // The color of the heart
   final Color bodyColor;
   // The color of the border of the heart
   final Color borderColor;
   // The thickness of the border
   final double borderWith;
+  const HeartAnimation({
+    Key? key,
+    required this.duration,
+    required this.size,
+    required this.bodyColor,
+    required this.borderColor,
+    required this.borderWith,
+  }) : super(key: key);
+
+  @override
+  State<HeartAnimation> createState() => _HeartAnimationState();
+}
+
+class _HeartAnimationState extends State<HeartAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+    );
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Timer(widget.duration, () => _animationController.reverse());
+      }
+      if (status == AnimationStatus.dismissed) {
+        Timer(widget.duration, () => _animationController.forward());
+      }
+    });
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: HeartPainter(
+        progress: _animationController,
+        bodyColor: widget.bodyColor,
+        borderColor: widget.borderColor,
+        borderWith: widget.borderWith,
+      ),
+      size: widget.size,
+    );
+  }
+}
+
+class HeartPainter extends CustomPainter {
+  // The color of the heart
+  final Color bodyColor;
+  // The color of the border of the heart
+  final Color? borderColor;
+  // The thickness of the border
+  final double? borderWith;
   final Animation<double>? progress;
   final List<double> _timeLine = [];
 
   HeartPainter({
-    this.progress,
     required this.bodyColor,
-    required this.borderColor,
-    required this.borderWith,
+    this.progress,
+    this.borderColor,
+    this.borderWith,
   }) : super(repaint: progress);
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
     Paint paintBorder = Paint();
     paintBorder
-      ..color = borderColor
+      ..color = borderColor ?? Colors.transparent
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = borderWith;
+      ..strokeWidth = borderWith ?? 0.0;
 
     Paint paintFill = Paint();
     paintFill
@@ -74,30 +139,39 @@ class HeartPainter extends CustomPainter {
 
     final start = Offset(0.5 * width, height * 0.35);
 
-    if (progress!.status == AnimationStatus.forward) {
-      _timeLine.add(progress!.value);
-      canvas.drawPath(tripTimeLine(size, start), paintBorder);
-    } else if (progress!.status == AnimationStatus.reverse) {
-      canvas.drawPath(tripTimeLine(size, start), paintFill);
-      canvas.drawPath(tripTimeLine(size, start), paintBorder);
-      if (_timeLine.isNotEmpty) _timeLine.removeLast();
-    } else if (_timeLine.length > 1) {
-      canvas.drawPath(tripTimeLine(size, start), paintFill);
-      canvas.drawPath(tripTimeLine(size, start), paintBorder);
-    }
+    if (progress != null) {
+      if (progress!.status == AnimationStatus.forward) {
+        _timeLine.add(progress!.value);
+        canvas.drawPath(tripTimeLine(size, start), paintBorder);
+      } else if (progress!.status == AnimationStatus.reverse) {
+        canvas.drawPath(tripTimeLine(size, start), paintFill);
+        canvas.drawPath(tripTimeLine(size, start), paintBorder);
+        if (_timeLine.isNotEmpty) _timeLine.removeLast();
+      } else if (_timeLine.length > 1) {
+        canvas.drawPath(tripTimeLine(size, start), paintFill);
+        canvas.drawPath(tripTimeLine(size, start), paintBorder);
+      }
 
-    if (!progress!.isCompleted && !progress!.isDismissed) {
+      if (!progress!.isCompleted && !progress!.isDismissed) {
+        final heartCurve = HeartCurve(size: size);
+        final current = heartCurve.transform(progress!.value);
+        final pointPaint = Paint()..color = Colors.deepOrangeAccent;
+        canvas.drawCircle(current, 7, pointPaint);
+      }
+    } else {
+      var path = Path()..moveTo(start.dx, start.dy);
       final heartCurve = HeartCurve(size: size);
-      final current = heartCurve.transform(progress!.value);
-      final pointPaint = Paint()..color = Colors.deepOrangeAccent;
-      canvas.drawCircle(current, 7, pointPaint);
+      for (var t = 0.01; t <= 1.0; t += 0.01) {
+        var step = heartCurve.transform(t);
+        path.lineTo(step.dx, step.dy);
+      }
+      canvas.drawPath(path, paintFill);
+      canvas.drawPath(path, paintBorder);
     }
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 
   Path tripTimeLine(Size size, Offset start) {
     var path = Path()..moveTo(start.dx, start.dy);

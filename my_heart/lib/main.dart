@@ -47,67 +47,59 @@ class _MyHomePageState extends State<MyHomePage> {
         //     borderColor: Color.fromARGB(255, 41, 17, 9),
         //     borderWith: 12,
         //     size: Size(880, 800)),
-        // child: Scratcher(
-        //   brushSize: 30,
-        //   threshold: 50,
-        //   color: Colors.grey,
-        //   rebuildOnResize: false,
-        //   onChange: (value) => print("Scratch progress: $value%"),
-        //   onThreshold: () => print("Threshold reached, you won!"),
-        //   child: Container(
-        //     height: 400,
-        //     width: 440,
-        //     child: CustomPaint(
-        //       painter: HeartPainter(
-        //         bodyColor: Color(0xFFF27788),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        child: FutureBuilder<ui.Image>(
-          future: dartDecodeImage("https://picsum.photos/300/300", context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator.adaptive();
-            }
-            return CustomPaint(
-              painter: TestPainter(
-                  image: snapshot.data!,
-                  wallColor: Theme.of(context).scaffoldBackgroundColor),
-            );
-          },
+        child: CustomPaint(
+          foregroundPainter: HeartPainter(
+            bodyColor: Theme.of(context).scaffoldBackgroundColor,
+            isShallow: true,
+          ),
+          child: Scratcher(
+            brushSize: 30,
+            threshold: 50,
+            color: Colors.grey,
+            rebuildOnResize: false,
+            onChange: (value) => print("Scratch progress: $value%"),
+            onThreshold: () => print("Threshold reached, you won!"),
+            child: Container(
+              height: 800,
+              width: 880,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage("https://picsum.photos/300/300"),
+                      fit: BoxFit.cover)),
+            ),
+          ),
         ),
+        // child: FutureBuilder<ui.Image>(
+        //   future: dartDecodeImage("https://picsum.photos/300/300", context),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.connectionState == ConnectionState.waiting) {
+        //       return const CircularProgressIndicator.adaptive();
+        //     }
+        //     final img = snapshot.data!;
+        //     return CustomPaint(
+        //       foregroundPainter: ImagePaiter(
+        //           image: img,
+        //           wallColor: Theme.of(context).scaffoldBackgroundColor),
+        //       child: Scratcher(
+        //         brushSize: 30,
+        //         threshold: 50,
+        //         color: Colors.grey,
+        //         rebuildOnResize: false,
+        //         onChange: (value) => print("Scratch progress: $value%"),
+        //         onThreshold: () => print("Threshold reached, you won!"),
+        //         child: Container(
+        //           width: img.width.toDouble(),
+        //           height: img.height.toDouble(),
+        //           decoration: BoxDecoration(
+        //               image: DecorationImage(
+        //                   image: NetworkImage("https://picsum.photos/300/300"),
+        //                   fit: BoxFit.cover)),
+        //         ),
+        //       ),
+        //     );
+        // },
+        // ),
       ),
     );
   }
-}
-
-class TestPainter extends CustomPainter {
-  final ui.Image image;
-  Color? wallColor;
-
-  TestPainter({required this.image, this.wallColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    double width = size.width;
-    double height = size.height;
-    final lt =
-        Offset(width / 2 - image.width / 2, height / 2 - image.height / 2);
-    canvas.drawImage(image, lt, Paint());
-    //ref. https://stackoverflow.com/questions/59626727/how-to-erase-clip-from-canvas-custompaint
-    canvas.saveLayer(Rect.largest, Paint());
-    canvas.drawRect(
-        Rect.fromLTWH(
-            lt.dx, lt.dy, image.width.toDouble(), image.height.toDouble()),
-        Paint()..color = wallColor ?? Colors.white);
-    final heartPatten =
-        heartGraph(Size(image.width.toDouble(), image.height.toDouble()));
-
-    canvas.drawPath(heartPatten, Paint()..blendMode = BlendMode.clear);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -38,5 +38,35 @@ Path heartGraph(Size size) {
     var step = heartCurve.transform(t);
     path.lineTo(step.dx, step.dy);
   }
-  return path.shift(Offset(-width / 2, -height / 2));
+  return path; //.shift(Offset(-width / 2, -height / 2));
+}
+
+class ImagePaiter extends CustomPainter {
+  final ui.Image image;
+  Color? wallColor;
+
+  ImagePaiter({required this.image, this.wallColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double width = size.width;
+    double height = size.height;
+    final lt =
+        Offset(width / 2 - image.width / 2, height / 2 - image.height / 2);
+    canvas.drawImage(image, lt, Paint());
+    //ref. https://stackoverflow.com/questions/59626727/how-to-erase-clip-from-canvas-custompaint
+    canvas.saveLayer(Rect.largest, Paint());
+    canvas.drawRect(
+        Rect.fromLTWH(
+            lt.dx, lt.dy, image.width.toDouble(), image.height.toDouble()),
+        Paint()..color = wallColor ?? Colors.white);
+    final heartPatten =
+        heartGraph(Size(image.width.toDouble(), image.height.toDouble()));
+
+    canvas.drawPath(heartPatten, Paint()..blendMode = BlendMode.clear);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -109,11 +109,13 @@ class HeartPainter extends CustomPainter {
   final Color? borderColor;
   // The thickness of the border
   final double? borderWith;
+  final bool isShallow;
   final Animation<double>? progress;
   final List<double> _timeLine = [];
 
   HeartPainter({
     required this.bodyColor,
+    this.isShallow = false,
     this.progress,
     this.borderColor,
     this.borderWith,
@@ -159,14 +161,22 @@ class HeartPainter extends CustomPainter {
         canvas.drawCircle(current, 7, pointPaint);
       }
     } else {
-      var path = Path()..moveTo(start.dx, start.dy);
+      var heartPattern = Path()..moveTo(start.dx, start.dy);
       final heartCurve = HeartCurve(size: size);
       for (var t = 0.01; t <= 1.0; t += 0.01) {
         var step = heartCurve.transform(t);
-        path.lineTo(step.dx, step.dy);
+        heartPattern.lineTo(step.dx, step.dy);
       }
-      canvas.drawPath(path, paintFill);
-      canvas.drawPath(path, paintBorder);
+      if (isShallow) {
+        //ref. https://stackoverflow.com/questions/59626727/how-to-erase-clip-from-canvas-custompaint
+        canvas.saveLayer(Rect.largest, Paint());
+        canvas.drawRect(Rect.largest, paintFill);
+        canvas.drawPath(heartPattern, Paint()..blendMode = BlendMode.clear);
+        canvas.restore();
+      } else {
+        canvas.drawPath(heartPattern, paintFill);
+        canvas.drawPath(heartPattern, paintBorder);
+      }
     }
   }
 

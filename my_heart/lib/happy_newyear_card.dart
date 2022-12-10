@@ -14,6 +14,18 @@ class HappyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scenery = Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black,
+              Colors.blue[900]!,
+            ],
+          ),
+          borderRadius: const BorderRadius.all(Radius.circular(8.0))),
+    );
     return SizedBox(
       width: size.width,
       height: size.height,
@@ -22,7 +34,7 @@ class HappyCard extends StatelessWidget {
         builder: (context, snapshot) {
           return Stack(
             children: [
-              if (background != null) background!,
+              background ?? scenery,
               ShaderMask(
                 blendMode: BlendMode.srcIn,
                 shaderCallback: (bounds) => ui.Gradient.linear(

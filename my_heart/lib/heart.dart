@@ -91,7 +91,7 @@ class _HeartAnimationState extends State<HeartAnimation>
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: HeartPainter(
+      foregroundPainter: HeartPainter(
         progress: _animationController,
         bodyColor: widget.bodyColor,
         borderColor: widget.borderColor,

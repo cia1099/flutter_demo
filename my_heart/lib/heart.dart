@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:my_heart/node/heart_node.dart';
+import 'package:spritewidget/spritewidget.dart';
 
 class HeartCurve extends Curve2D {
   final Size size;
@@ -91,7 +93,7 @@ class _HeartAnimationState extends State<HeartAnimation>
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      foregroundPainter: HeartPainter(
+      painter: HeartPainter(
         progress: _animationController,
         bodyColor: widget.bodyColor,
         borderColor: widget.borderColor,
@@ -142,21 +144,26 @@ class HeartPainter extends CustomPainter {
     final start = Offset(0.5 * width, height * 0.35);
 
     if (progress != null) {
+      double? lastTime;
       if (progress!.status == AnimationStatus.forward) {
         _timeLine.add(progress!.value);
-        canvas.drawPath(tripTimeLine(size, start), paintBorder);
       } else if (progress!.status == AnimationStatus.reverse) {
-        canvas.drawPath(tripTimeLine(size, start), paintFill);
         canvas.drawPath(tripTimeLine(size, start), paintBorder);
-        if (_timeLine.isNotEmpty) _timeLine.removeLast();
-      } else if (_timeLine.length > 1) {
+        if (_timeLine.isNotEmpty) {
+          lastTime = _timeLine.removeLast();
+          canvas.drawPath(tripTimeLine(size, start), paintFill);
+        }
+      }
+      if (progress!.isCompleted)
         canvas.drawPath(tripTimeLine(size, start), paintFill);
+      if (_timeLine.length > 1) {
         canvas.drawPath(tripTimeLine(size, start), paintBorder);
+        if (progress!.isDismissed) _timeLine.clear();
       }
 
       if (!progress!.isCompleted && !progress!.isDismissed) {
         final heartCurve = HeartCurve(size: size);
-        final current = heartCurve.transform(progress!.value);
+        final current = heartCurve.transform(lastTime ?? _timeLine.last);
         final pointPaint = Paint()..color = Colors.deepOrangeAccent;
         canvas.drawCircle(current, 7, pointPaint);
       }

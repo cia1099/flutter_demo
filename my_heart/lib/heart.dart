@@ -49,6 +49,8 @@ class HeartAnimation extends StatefulWidget {
   final Color borderColor;
   // The thickness of the border
   final double borderWith;
+  final Widget? child;
+  final bool isShallow;
   const HeartAnimation({
     Key? key,
     required this.duration,
@@ -56,6 +58,8 @@ class HeartAnimation extends StatefulWidget {
     required this.bodyColor,
     required this.borderColor,
     required this.borderWith,
+    this.child,
+    this.isShallow = false,
   }) : super(key: key);
 
   @override
@@ -93,13 +97,15 @@ class _HeartAnimationState extends State<HeartAnimation>
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: HeartPainter(
+      foregroundPainter: HeartPainter(
         progress: _animationController,
         bodyColor: widget.bodyColor,
         borderColor: widget.borderColor,
         borderWith: widget.borderWith,
+        isShallow: widget.isShallow,
       ),
       size: widget.size,
+      child: widget.child,
     );
   }
 }
@@ -147,17 +153,27 @@ class HeartPainter extends CustomPainter {
       double? lastTime;
       if (progress!.status == AnimationStatus.forward) {
         _timeLine.add(progress!.value);
-      } else if (progress!.status == AnimationStatus.reverse) {
-        canvas.drawPath(tripTimeLine(size, start), paintBorder);
-        if (_timeLine.isNotEmpty) {
-          lastTime = _timeLine.removeLast();
-          canvas.drawPath(tripTimeLine(size, start), paintFill);
-        }
+      } else if (progress!.status == AnimationStatus.reverse &&
+          _timeLine.isNotEmpty) {
+        lastTime = _timeLine.removeLast();
       }
-      if (progress!.isCompleted)
-        canvas.drawPath(tripTimeLine(size, start), paintFill);
+
+      if (isShallow) {
+        //ref. https://stackoverflow.com/questions/59626727/how-to-erase-clip-from-canvas-custompaint
+        canvas.saveLayer(Rect.largest, Paint());
+        canvas.drawRect(Rect.largest, paintFill);
+        canvas.drawPath(
+            tripTimeLine(size, start), Paint()..blendMode = BlendMode.clear);
+        canvas.restore();
+      }
+
       if (_timeLine.length > 1) {
-        canvas.drawPath(tripTimeLine(size, start), paintBorder);
+        final heartPattern = tripTimeLine(size, start);
+        if (progress!.isDismissed ||
+            progress!.status == AnimationStatus.reverse && !isShallow) {
+          canvas.drawPath(heartPattern, paintFill);
+        }
+        canvas.drawPath(heartPattern, paintBorder);
         if (progress!.isDismissed) _timeLine.clear();
       }
 

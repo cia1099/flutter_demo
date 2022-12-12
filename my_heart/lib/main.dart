@@ -55,19 +55,35 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late List<Widget> _showSliders;
   int _currentPage = 0;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _showSliders = [
       Container(
         height: 800,
         width: 880,
         child: HeartAnimation(
-            duration: Duration(seconds: 3),
-            bodyColor: Color(0xFFF27788),
-            borderColor: Color.fromARGB(255, 41, 17, 9),
-            borderWith: 12,
-            size: Size(880, 800)),
+          duration: Duration(seconds: 3),
+          bodyColor:
+              Theme.of(context).scaffoldBackgroundColor, //Color(0xFFF27788),
+          borderColor: Color.fromARGB(255, 41, 17, 9),
+          borderWith: 12,
+          isShallow: true,
+          size: Size(880, 800),
+          child: LayoutBuilder(
+            builder: (context, constraints) => Container(
+              height: constraints.maxWidth,
+              width: constraints.maxHeight,
+              padding: EdgeInsets.only(top: constraints.maxHeight * 0.25),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage("https://picsum.photos/300/300"),
+                      fit: BoxFit.cover)),
+            ),
+          ),
+        ),
       ),
       HoneyScratcher(size: Size(800, 880)),
       Center(child: HappyCard(size: Size(400, 440)))

@@ -10,10 +10,12 @@ import 'package:my_heart/node/fireworks_node.dart';
 import 'package:my_heart/utilts.dart';
 import 'package:scratcher/scratcher.dart';
 import 'package:spritewidget/spritewidget.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 import 'happy_newyear_card.dart';
 
 void main() {
+  setPathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -36,7 +38,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       scrollBehavior: AppScrollBehavior(),
       debugShowCheckedModeBanner: false,
-      title: 'My Honey',
+      title: '程序员的浪漫',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -79,8 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage("https://picsum.photos/300/300"),
-                      fit: BoxFit.cover)),
+                      image: AssetImage(ChatModel.getImage()),
+                      fit: BoxFit.fill)),
             ),
           ),
         ),
@@ -119,15 +121,27 @@ class _MyHomePageState extends State<MyHomePage> {
         if (_currentPage > 0)
           Align(
             alignment: FractionalOffset(0.5, 0.05),
-            child: Icon(
-              Icons.keyboard_double_arrow_up,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.keyboard_double_arrow_up,
+                ),
+                Text("上滑还有"),
+              ],
             ),
           ),
         if (_currentPage < 2)
           Align(
             alignment: FractionalOffset(0.5, 0.98),
-            child: Icon(
-              Icons.keyboard_double_arrow_down,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.keyboard_double_arrow_down,
+                ),
+                Text("下滑还有"),
+              ],
             ),
           ),
       ]),

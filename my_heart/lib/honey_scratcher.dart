@@ -33,8 +33,8 @@ class HoneyScratcher extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage("https://picsum.photos/300/300"),
-                      fit: BoxFit.cover)),
+                      image: AssetImage(ChatModel.getImage()),
+                      fit: BoxFit.contain)),
               child: BorderedText(
                 strokeWidth: 1.5,
                 child: Text(

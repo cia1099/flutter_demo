@@ -13,7 +13,7 @@ class HoneyScratcher extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: [
       Align(
-        alignment: FractionalOffset(0.5, 0.5),
+        alignment: const FractionalOffset(0.5, 0.5),
         child: CustomPaint(
           foregroundPainter: HeartPainter(
             bodyColor: Theme.of(context).scaffoldBackgroundColor,
@@ -39,7 +39,7 @@ class HoneyScratcher extends StatelessWidget {
                 strokeWidth: 1.5,
                 child: Text(
                   ChatModel.talk(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                   ),
@@ -49,7 +49,7 @@ class HoneyScratcher extends StatelessWidget {
           ),
         ),
       ),
-      Align(
+      const Align(
         alignment: FractionalOffset(0.5, 0.1),
         child: Text(
           "刮刮乐",
@@ -61,7 +61,7 @@ class HoneyScratcher extends StatelessWidget {
           ),
         ),
       ),
-      Align(
+      const Align(
         alignment: FractionalOffset(0.5, 0.925),
         child: Text(
           "每次刮开都会有不同惊喜",

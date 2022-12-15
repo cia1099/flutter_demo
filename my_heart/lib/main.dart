@@ -1,15 +1,9 @@
-import 'dart:ui' as ui show Image, Gradient;
 import 'dart:ui';
 
-import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:my_heart/chat_model.dart';
 import 'package:my_heart/heart.dart';
 import 'package:my_heart/honey_scratcher.dart';
-import 'package:my_heart/node/fireworks_node.dart';
-import 'package:my_heart/utilts.dart';
-import 'package:scratcher/scratcher.dart';
-import 'package:spritewidget/spritewidget.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'happy_newyear_card.dart';
@@ -62,17 +56,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _showSliders = [
-      Container(
+      SizedBox(
         height: 800,
         width: 880,
         child: HeartAnimation(
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
           bodyColor:
               Theme.of(context).scaffoldBackgroundColor, //Color(0xFFF27788),
-          borderColor: Color.fromARGB(255, 41, 17, 9),
+          borderColor: const Color.fromARGB(255, 41, 17, 9),
           borderWith: 12,
           isShallow: true,
-          size: Size(880, 800),
+          size: const Size(880, 800),
           child: LayoutBuilder(
             builder: (context, constraints) => Container(
               height: constraints.maxWidth,
@@ -87,14 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      HoneyScratcher(size: Size(800, 880)),
-      Center(child: HappyCard(size: Size(400, 440)))
+      const HoneyScratcher(size: Size(800, 880)),
+      const Center(child: HappyCard(size: Size(400, 440)))
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Stack(children: [
         Center(
@@ -120,10 +113,10 @@ class _MyHomePageState extends State<MyHomePage> {
         )),
         if (_currentPage > 0)
           Align(
-            alignment: FractionalOffset(0.5, 0.05),
+            alignment: const FractionalOffset(0.5, 0.05),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Icon(
                   Icons.keyboard_double_arrow_up,
                 ),
@@ -133,10 +126,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         if (_currentPage < 2)
           Align(
-            alignment: FractionalOffset(0.5, 0.98),
+            alignment: const FractionalOffset(0.5, 0.98),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Icon(
                   Icons.keyboard_double_arrow_down,
                 ),

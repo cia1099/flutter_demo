@@ -35,12 +35,13 @@ class FireworksNode extends NodeWithSize {
     double rand = randomDouble();
     if (rand < 0.25) {
       return Colors.deepPurple[400]!;
-    } else if (rand < 0.5)
+    } else if (rand < 0.5) {
       return Colors.yellow[400]!;
-    else if (rand < 0.75)
+    } else if (rand < 0.75) {
       return Colors.amber[400]!;
-    else
+    } else {
       return Colors.red[400]!;
+    }
   }
 
   // Adds an explosion to the fireworks

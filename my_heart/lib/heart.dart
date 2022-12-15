@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:my_heart/node/heart_node.dart';
-import 'package:spritewidget/spritewidget.dart';
 
 class HeartCurve extends Curve2D {
   final Size size;

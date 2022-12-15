@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:my_heart/heart.dart';
 
 Future<ui.Image> dartDecodeImage(String path, [BuildContext? context]) async {
-  /**
-   * ref. https://stackoverflow.com/questions/65439889/flutter-canvas-drawimage-draws-a-pixelated-image
-   * ref. https://blog.csdn.net/jia635/article/details/108155213
-   */
+  /// ref. https://stackoverflow.com/questions/65439889/flutter-canvas-drawimage-draws-a-pixelated-image
+  /// ref. https://blog.csdn.net/jia635/article/details/108155213
   ImageStream imgStream;
   if (path.substring(0, 4) == 'http') {
     imgStream = NetworkImage(path).resolve(context == null

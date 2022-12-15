@@ -1,5 +1,3 @@
-import 'dart:ui' as ui show Image;
-
 import 'package:flutter/material.dart';
 import 'package:my_heart/heart.dart';
 import 'package:my_heart/utilts.dart';

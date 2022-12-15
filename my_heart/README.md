@@ -97,3 +97,19 @@ void main() {
 
 <font color=ff00ff>如果`/web`改爛了，直接刪除再到終端輸入`flutter create .`重生一個預設的就好。</font>
 
+## Flutter Disgnosis
+[See Cross-Platform-UIs-with-Flutter
+ published by Packt](https://github.com/PacktPublishing/Cross-Platform-UIs-with-Flutter/blob/main/.github/workflows/project_ci.yml)
+* #### references :
+1. https://github.com/subosito/flutter-action
+2. https://docs.github.com/en/actions
+
+```shell
+dart fix --apply lib
+flutter format --fix lib
+flutter format --set-exit-if-changed lib
+flutter analyze --fatal-infos --fatal-warnings
+flutter pub add --dev dart_code_metrics && \
+flutter pub run dart_code_metrics:metrics analyze lib
+```
+

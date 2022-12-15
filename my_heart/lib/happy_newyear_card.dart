@@ -40,7 +40,7 @@ class HappyCard extends StatelessWidget {
                 shaderCallback: (bounds) => ui.Gradient.linear(
                     Offset(bounds.width / 2, bounds.height / 4),
                     Offset(bounds.width / 2, bounds.height / 4 + 30 * 4),
-                    [Color(0xFFF0E68C), Colors.red]),
+                    [const Color(0xFFF0E68C), Colors.red]),
                 child: CustomPaint(
                   painter: HappyNewYearPainter(),
                   size: size,
@@ -51,7 +51,7 @@ class HappyCard extends StatelessWidget {
                 shaderCallback: (bounds) => ui.Gradient.linear(
                     Offset(bounds.width / 2, bounds.height / 8 * 5),
                     Offset(bounds.width / 2, bounds.height),
-                    [Colors.red, Color(0xFFF0E68C)]),
+                    [Colors.red, const Color(0xFFF0E68C)]),
                 child: CustomPaint(
                   painter: UmbrallaPainter(),
                   size: size,
@@ -81,7 +81,7 @@ class HappyNewYearPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     const fontSize = 30.0;
-    final textStyle = TextStyle(
+    const textStyle = TextStyle(
         color: Colors.white,
         fontSize: fontSize,
         fontFamily: 'Slidefu-Regular-2');
@@ -99,7 +99,7 @@ class HappyNewYearPainter extends CustomPainter {
       final y = size.height / 4 - textPainter.height / 2 + fontSize * i;
       textPainter.paint(canvas, Offset(x, y));
     }
-    final textSpan = TextSpan(
+    const textSpan = TextSpan(
       text: '2023',
       style: textStyle,
     );
@@ -124,17 +124,17 @@ class UmbrallaPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     const fontSize = 30.0;
-    final textStyle = TextStyle(
+    const textStyle = TextStyle(
         color: Colors.white,
         fontSize: fontSize,
         fontFamily: 'Slidefu-Regular-2');
     final top = Offset(size.width / 2, size.height / 8 * 5);
     final umbralla = Path()..moveTo(top.dx, top.dy);
-    final WUmbralla = fontSize * 5 / 3;
-    final hUmbralla = 3 * WUmbralla;
-    umbralla.lineTo(top.dx + WUmbralla, top.dy + hUmbralla / 4);
-    umbralla.lineTo(top.dx - WUmbralla, top.dy + hUmbralla / 4);
-    umbralla.lineTo(top.dx - WUmbralla / 4, top.dy + hUmbralla / 8);
+    const wUmbralla = fontSize * 5 / 3;
+    const hUmbralla = 3 * wUmbralla;
+    umbralla.lineTo(top.dx + wUmbralla, top.dy + hUmbralla / 4);
+    umbralla.lineTo(top.dx - wUmbralla, top.dy + hUmbralla / 4);
+    umbralla.lineTo(top.dx - wUmbralla / 4, top.dy + hUmbralla / 8);
     umbralla.moveTo(top.dx, top.dy);
     umbralla.lineTo(top.dx, top.dy + hUmbralla);
     canvas.drawPath(

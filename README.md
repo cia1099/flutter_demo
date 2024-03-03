@@ -26,7 +26,7 @@ adb shell
 ```
 ref. https://stackoverflow.com/questions/5151744/upload-picture-to-emulator-gallery
 
-* 删除device里的APP
+* 删除device里的APP\
     先查已安装的APP包名，如果不知道包名，可以先将查表先记录下来，再手动删除APP，然后再记录查表变化:
 ```shell
 adb shell pm list packages
@@ -38,6 +38,7 @@ adb shell pm list packages > p1.txt
 #比较差异，比较出删除的包名
 opendiff p0.txt p1.txt
 ```
+ref. https://stackoverflow.com/questions/25927124/android-studio-how-to-uninstall-apk-or-execute-adb-command-automatically-bef
 
 ## Colorized Console
 

@@ -65,8 +65,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            StatefulBuilder(
+              builder: (context, setState) {
+                final sentence = 'You have pushed the button this many times:\n'
+                    .split(" ")
+                    .expand((word) sync* {
+                  yield word.contains("\n") ? word.replaceAll("\n", "") : word;
+                  if (!word.contains("\n")) yield " ";
+                });
+                return SelectableText.rich(
+                  TextSpan(
+                      children: sentence
+                          .map((word) => TextSpan(text: word))
+                          .toList()),
+                  style: TextStyle(fontSize: 30),
+                );
+              },
             ),
             Text(
               '$_counter',
@@ -78,15 +92,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 // print(buttons.map((e) => e.label));
                 // final text = selectableRegionState.textEditingValue.text;
                 // print(text);
-                final offset =
-                    selectableRegionState.contextMenuAnchors.primaryAnchor;
-                final end = selectableRegionState.selectionEndpoints;
-                print("\x1b[43;1m$offset\x1b[0m");
-                print("\x1b[43;1m$end\x1b[0m");
+                // final offset =
+                //     selectableRegionState.contextMenuAnchors.primaryAnchor;
+                // final end = selectableRegionState.selectionEndpoints;
+                // print("\x1b[43;1m$offset\x1b[0m");
+                // print("\x1b[43;1m$end\x1b[0m");
+                final ed = context.findAncestorStateOfType<EditableTextState>();
+                print("enditable = $ed");
                 // 返回自定义工具栏
                 return CustomTextSelectionToolbar(
                     selectableRegionState: selectableRegionState);
               },
+              // onSelectionChanged: (value) {
+              //   print(value?.plainText);
+              // },
               child: HtmlWidget(
                 key: selectedKey,
                 html,
@@ -138,27 +157,29 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class CustomTextSelectionToolbar extends StatelessWidget {
-  // final EditableTextState editableTextState;
   final SelectableRegionState selectableRegionState;
+  final GlobalKey<EditableTextState> editableTextKey =
+      GlobalKey<EditableTextState>();
 
-  const CustomTextSelectionToolbar(
-      {Key? key, required this.selectableRegionState})
+  CustomTextSelectionToolbar({Key? key, required this.selectableRegionState})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoAdaptiveTextSelectionToolbar.buttonItems(
+    return AdaptiveTextSelectionToolbar.buttonItems(
       buttonItems: [
         ContextMenuButtonItem(
           label: '复制',
           type: ContextMenuButtonType.copy,
           onPressed: () {
             selectableRegionState.copySelection(SelectionChangedCause.toolbar);
+            // Clipboard.setData(ClipboardData(
+            //     text: selectableRegionState.textEditingValue.text));
           },
         ),
         ContextMenuButtonItem(
           label: 'Search',
-          type: ContextMenuButtonType.searchWeb,
+          type: ContextMenuButtonType.lookUp,
           onPressed: () {
             Clipboard.getData("text/plain").then(
               (cache) {

@@ -54,6 +54,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  @override
+  void didChangeDependencies() async {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    await futureDB;
+  }
+
   final html = '''
     <div class="ml-1em">
     <span class="color-navy"><b>limp</b></span>

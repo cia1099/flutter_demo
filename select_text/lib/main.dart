@@ -1,13 +1,10 @@
-import 'dart:io';
-import 'package:path/path.dart' as p;
+import 'package:html_flutter/src/db_dictionary.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3/sqlite3.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,24 +38,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   final selectedKey = GlobalKey();
-  late final futureDB = copyAndOpenDatabase().then((value) {
-    db = value;
-  });
-  Database? db;
+  final db = DBDictionary();
 
   void _incrementCounter() {
-    final res = db?.select("SELECT mdx.entry FROM mdx");
-    print(res?.join(" "));
+    final res = db.select("SELECT entry FROM mdx").map((row) => row['entry']);
+    print(res.join(" "));
+    print(res);
     setState(() {
       _counter++;
     });
-  }
-
-  @override
-  void didChangeDependencies() async {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    await futureDB;
   }
 
   final html = '''
@@ -172,30 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-  Future<Database> copyAndOpenDatabase() async {
-    // 获取应用程序的文档目录
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    print("application dir: $documentsDirectory");
-
-    // 定义目标数据库路径
-    final dbPath = p.join(documentsDirectory.path, 'example.db');
-
-    // 检查数据库文件是否已经存在
-    if (!await File(dbPath).exists()) {
-      // 从 assets 中加载数据库文件
-      ByteData data = await rootBundle.load('assets/example.db');
-
-      // 创建新的文件并将数据写入
-      List<int> bytes =
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      await File(dbPath).writeAsBytes(bytes);
-    }
-
-    print("DB path: $dbPath");
-    // 打开数据库
-    return sqlite3.open(dbPath);
-  }
 }
 
 class CustomTextSelectionToolbar extends StatelessWidget {
@@ -220,7 +184,7 @@ class CustomTextSelectionToolbar extends StatelessWidget {
           },
         ),
         ContextMenuButtonItem(
-          label: 'Search',
+          label: 'Look Up',
           type: ContextMenuButtonType.lookUp,
           onPressed: () {
             Clipboard.getData("text/plain").then(

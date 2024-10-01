@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:html_flutter/src/db_dictionary.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:html_flutter/src/lookup_sheet.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {definition}
     </div>
   ''';
+  final words = ['doe', 'limp', 'ray'];
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: sentence
                           .map((word) => TextSpan(text: word))
                           .toList()),
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(fontSize: 16),
                 );
               },
             ),
@@ -93,59 +96,21 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             SelectionArea(
-              contextMenuBuilder: (context, selectableRegionState) {
-                // final buttons = selectableRegionState.contextMenuButtonItems;
-                // print(buttons.map((e) => e.label));
-                // final text = selectableRegionState.textEditingValue.text;
-                // print(text);
-                // final offset =
-                //     selectableRegionState.contextMenuAnchors.primaryAnchor;
-                // final end = selectableRegionState.selectionEndpoints;
-                // print("\x1b[43;1m$offset\x1b[0m");
-                // print("\x1b[43;1m$end\x1b[0m");
-                final ed = context.findAncestorStateOfType<EditableTextState>();
-                print("enditable = $ed");
-                // 返回自定义工具栏
-                return CustomTextSelectionToolbar(
-                    selectableRegionState: selectableRegionState);
-              },
-              // onSelectionChanged: (value) {
-              //   print(value?.plainText);
-              // },
-              child: HtmlWidget(
-                key: selectedKey,
-                html,
-                customStylesBuilder: (element) {
-                  final cssMap = {
-                    'ml-1em': {'margin-left': '1em'},
-                    'ml-2em': {'margin-left': '2em'},
-                    'color-navy': {'color': 'navy'},
-                    'color-purple': {'color': 'purple'},
-                    'color-darkslategray': {
-                      'color': 'darkslategray',
-                      'font-weight': 'bold',
-                      'font-style': 'italic'
-                    },
-                    'color-gray': {'color': 'gray'},
-                    'color-blue': {'color': 'blue'},
-                    'color-dodgerblue': {'color': 'dodgerblue'},
-                    'bold': {'font-weight': 'bold'},
-                    'italic': {'font-style': 'italic'}
-                  };
-                  for (final className in element.classes) {
-                    return cssMap[className];
-                  }
-                  return null;
-                },
-                onTapUrl: (url) {
-                  print('tapped $url');
-                  return true;
-                },
-                textStyle: TextStyle(
-                  fontSize: 32,
-                ),
-              ),
-            ),
+                contextMenuBuilder: (ctx, selectableRegionState) =>
+                    CustomTextSelectionToolbar(
+                      selectableRegionState: selectableRegionState,
+                      scaffoldContext: context,
+                    ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    List.generate(
+                            30, (i) => words[Random().nextInt(words.length)])
+                        .join(" "),
+                    style: TextStyle(fontSize: 24),
+                    overflow: TextOverflow.visible,
+                  ),
+                ))
             // Image.asset(
             //   "assets/playsound.png",
             //   width: 50,
@@ -155,6 +120,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
+        //     () => showModalBottomSheet(
+        //   context: context,
+        //   builder: (context) => Container(
+        //     height: 300,
+        //     color: Colors.green,
+        //   ),
+        // ),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
@@ -164,10 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class CustomTextSelectionToolbar extends StatelessWidget {
   final SelectableRegionState selectableRegionState;
-  final GlobalKey<EditableTextState> editableTextKey =
-      GlobalKey<EditableTextState>();
+  final BuildContext scaffoldContext;
 
-  CustomTextSelectionToolbar({Key? key, required this.selectableRegionState})
+  CustomTextSelectionToolbar(
+      {Key? key,
+      required this.selectableRegionState,
+      required this.scaffoldContext})
       : super(key: key);
 
   @override
@@ -198,6 +172,12 @@ class CustomTextSelectionToolbar extends StatelessWidget {
                       Clipboard.setData(ClipboardData(text: tmp));
                     }
                     print(data?.text);
+                    showModalBottomSheet(
+                        useSafeArea: true,
+                        context: scaffoldContext,
+                        showDragHandle: true,
+                        scrollControlDisabledMaxHeightRatio: 15.5 / 16,
+                        builder: (context) => LookUpSheet(word: data!.text!));
                   },
                 );
               },

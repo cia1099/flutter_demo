@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:html_flutter/src/clickable_text.dart';
 import 'package:html_flutter/src/db_dictionary.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -103,12 +104,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    List.generate(
+                  child:
+                      // Text(
+                      //   List.generate(
+                      //           30, (i) => words[Random().nextInt(words.length)])
+                      //       .join(" "),
+                      //   style: TextStyle(fontSize: 24),
+                      //   overflow: TextOverflow.visible,
+                      // ),
+                      ClickableText(
+                    text: List.generate(
                             30, (i) => words[Random().nextInt(words.length)])
                         .join(" "),
+                    onTap: <T>(String word) => showModalBottomSheet<T>(
+                      context: context,
+                      builder: (context) => LookUpSheet(word: word),
+                      scrollControlDisabledMaxHeightRatio: 5 / 16,
+                      isScrollControlled: false,
+                    ),
                     style: TextStyle(fontSize: 24),
-                    overflow: TextOverflow.visible,
                   ),
                 ))
             // Image.asset(
@@ -176,7 +190,8 @@ class CustomTextSelectionToolbar extends StatelessWidget {
                         useSafeArea: true,
                         context: scaffoldContext,
                         showDragHandle: true,
-                        scrollControlDisabledMaxHeightRatio: 15.5 / 16,
+                        // scrollControlDisabledMaxHeightRatio: 15.5 / 16,
+                        isScrollControlled: true,
                         builder: (context) => LookUpSheet(word: data!.text!));
                   },
                 );

@@ -9,6 +9,8 @@ class MethodChannelBatteryLevel extends BatteryLevelPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('battery_level');
 
+  final eventChannel = const EventChannel('battery_charging');
+
   @override
   Future<String?> getPlatformVersion() async {
     final version = await methodChannel.invokeMethod<String>(
@@ -23,5 +25,12 @@ class MethodChannelBatteryLevel extends BatteryLevelPlatform {
       'getBatteryLevel',
     );
     return batteryLevel;
+  }
+
+  @override
+  Stream<String?> batteryCharging() {
+    return eventChannel.receiveBroadcastStream().map<String?>(
+      (event) => event.toString(),
+    );
   }
 }

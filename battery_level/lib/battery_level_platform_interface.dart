@@ -30,4 +30,8 @@ abstract class BatteryLevelPlatform extends PlatformInterface {
   Future<int?> getBatteryLevel() {
     throw UnimplementedError('getBatteryLevel() has not been implemented.');
   }
+
+  Stream<String?> batteryCharging() {
+    throw UnimplementedError('batteryCharging() has not been implemented.');
+  }
 }

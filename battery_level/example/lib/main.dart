@@ -100,9 +100,9 @@ class _MyAppState extends State<MyApp> {
               child: Text("Increase Counter"),
               onPressed: () {
                 PlatformChannel.increaseCounter().then((value) {
-                  setState(() {
-                    countFromNative = value;
-                  });
+                  // setState(() {
+                  //   countFromNative = value;
+                  // });
                 });
               },
             ),
@@ -110,9 +110,9 @@ class _MyAppState extends State<MyApp> {
               child: Text("Decrease Counter"),
               onPressed: () {
                 PlatformChannel.decreaseCounter().then((value) {
-                  setState(() {
-                    countFromNative = value;
-                  });
+                  // setState(() {
+                  //   countFromNative = value;
+                  // });
                 });
               },
             ),

@@ -22,8 +22,9 @@ class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamH
   private lateinit var channel : MethodChannel
   private lateinit var charging: EventChannel
   //platform
+  private lateinit var platformHandler : PlatformChannelPlugin
   private lateinit var platformChannel : MethodChannel
-  // private lateinit var platformEventChannel: EventChannel
+  private lateinit var platformEventChannel: EventChannel
 
   private lateinit var context : Context //in order to getSystemService
 
@@ -36,11 +37,14 @@ class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamH
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "battery_level")
     channel.setMethodCallHandler(this)
     // external handler
+    platformHandler = PlatformChannelPlugin(context)
     platformChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "samples.flutter.io/battery")
-    platformChannel.setMethodCallHandler(PlatformChannelPlugin(context))
+    platformChannel.setMethodCallHandler(platformHandler)
     //create even
     charging = EventChannel(flutterPluginBinding.binaryMessenger, "battery_charging")
     charging.setStreamHandler(this)
+    platformEventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "samples.flutter.io/charging")
+    platformEventChannel.setStreamHandler(platformHandler)
   }
 
   // MARK: - Method Channel
@@ -114,6 +118,9 @@ class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamH
   
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+    platformChannel.setMethodCallHandler(null)
+    platformEventChannel.setStreamHandler(null)
+    charging.setStreamHandler(null)
     onCancel(null)
   }
 }

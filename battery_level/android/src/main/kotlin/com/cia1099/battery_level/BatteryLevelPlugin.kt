@@ -5,6 +5,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.EventChannel
 
 import android.content.Context
 import android.content.ContextWrapper
@@ -13,20 +14,33 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.content.BroadcastReceiver
 
 /** BatteryLevelPlugin */
-class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
+class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
+
   private lateinit var channel : MethodChannel
+  private lateinit var charging: EventChannel
+  //platform
+  private lateinit var platformChannel : MethodChannel
+  // private lateinit var platformEventChannel: EventChannel
+
   private lateinit var context : Context //in order to getSystemService
+
+  // EventChannel 的事件下发器与接收器引用，便于取消注册
+  private var events: EventChannel.EventSink? = null
+  private var batteryReceiver: BroadcastReceiver? = null
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     context = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "battery_level")
     channel.setMethodCallHandler(this)
+    // external handler
+    platformChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "samples.flutter.io/battery")
+    platformChannel.setMethodCallHandler(PlatformChannelPlugin(context))
+    //create even
+    charging = EventChannel(flutterPluginBinding.binaryMessenger, "battery_charging")
+    charging.setStreamHandler(this)
   }
 
   // MARK: - Method Channel
@@ -59,8 +73,49 @@ class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler {
 
     return batteryLevel
   }
+
+  // MARK: - Event Channel
+  override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+    this.events = events
+    // 1) 先立即推一次当前电量（可选）
+    val current = getBatteryLevel()
+    if (current != -1) {
+      this.events?.success(current)
+    }
+    // 2) 注册系统电池广播，后续有变化时推送
+    if (batteryReceiver == null) {
+      batteryReceiver = object : BroadcastReceiver() {
+        override fun onReceive(ctx: Context?, intent: Intent?) {
+          if (intent?.action == Intent.ACTION_BATTERY_CHANGED) {
+            val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+            if (level >= 0 && scale > 0) {
+              val percent = level * 100 / scale
+              this@BatteryLevelPlugin.events?.success(percent)
+            }
+          }
+        }
+      }
+      context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+  }
+  // EventChannel: Dart 取消监听
+  override fun onCancel(arguments: Any?) {
+    if (batteryReceiver != null) {
+      try {
+        context.unregisterReceiver(batteryReceiver)
+      } catch (_: IllegalArgumentException) {
+        // 已经被注销时忽略
+      }
+      batteryReceiver = null
+    }
+    events = null
+  }
   
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+    onCancel(null)
   }
 }
+
+

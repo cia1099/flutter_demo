@@ -7,7 +7,7 @@ class BatteryLevel {
     return BatteryLevelPlatform.instance.getPlatformVersion();
   }
 
-  Future<int?> getButteryLevel() {
+  Future<int?> getBatteryLevel() {
     return BatteryLevelPlatform.instance.getBatteryLevel();
   }
 

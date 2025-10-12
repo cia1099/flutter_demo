@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.battery_level
+        package: com.cia1099.battery_level
         pluginClass: BatteryLevelPlugin
       ios:
         pluginClass: BatteryLevelPlugin

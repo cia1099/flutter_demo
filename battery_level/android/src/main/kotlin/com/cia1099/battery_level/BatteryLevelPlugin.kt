@@ -6,6 +6,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.plugin.common.StringCodec
 
 import android.content.Context
 import android.content.ContextWrapper
@@ -21,10 +23,11 @@ class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamH
 
   private lateinit var channel : MethodChannel
   private lateinit var charging: EventChannel
-  //platform
+  //register external plugin
   private lateinit var platformHandler : PlatformChannelPlugin
   private lateinit var platformChannel : MethodChannel
   private lateinit var platformEventChannel: EventChannel
+
 
   private lateinit var context : Context //in order to getSystemService
 
@@ -36,8 +39,15 @@ class BatteryLevelPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamH
     context = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "battery_level")
     channel.setMethodCallHandler(this)
-    // external handler
-    platformHandler = PlatformChannelPlugin(context)
+    //message 这个无法用Interface(PlatformChannelPlugin)来化简，因为需要传入FlutterPlugin
+    val messageChannel = BasicMessageChannel(flutterPluginBinding.binaryMessenger, "samples.flutter.io/message", StringCodec.INSTANCE)
+    messageChannel.setMessageHandler { message, reply ->
+      println("Received from Dart: $message")
+      // 回复 Flutter
+      reply.reply("Android got your message!($message)")
+    }
+    //MARK: - external handler
+    platformHandler = PlatformChannelPlugin(context, messageChannel)
     platformChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "samples.flutter.io/battery")
     platformChannel.setMethodCallHandler(platformHandler)
     //create even

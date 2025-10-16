@@ -23,5 +23,6 @@ public class BatteryLevelPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   //...
 }
 ```
+[GPT QA](https://chatgpt.com/share/68f078c7-86d4-8005-8530-3696d8cbb42c)
 
 

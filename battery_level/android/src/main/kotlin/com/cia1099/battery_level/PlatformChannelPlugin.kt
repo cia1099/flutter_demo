@@ -3,18 +3,22 @@ package com.cia1099.battery_level
 import android.content.Context
 import android.content.*
 import android.os.*
+import kotlinx.coroutines.*
 
 
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.BasicMessageChannel
 
 
-class PlatformChannelPlugin(private val context: Context): MethodCallHandler, EventChannel.StreamHandler {
+class PlatformChannelPlugin(private val context: Context, private val messageChannel: BasicMessageChannel<String>): MethodCallHandler, EventChannel.StreamHandler {
   private var sink: EventChannel.EventSink? = null
   private val mainHandler = Handler(Looper.getMainLooper())
   private var _count = 0
+  private var timer: Job? = null
+
   // MARK: - Method channel
   override fun onMethodCall(call: MethodCall, result: Result) {
     when(call.method){
@@ -28,6 +32,20 @@ class PlatformChannelPlugin(private val context: Context): MethodCallHandler, Ev
         _count--
         result.success(_count)
         emitCount(_count)
+      }
+      "startTimer" -> {
+        if(timer == null){
+          timer = CoroutineScope(Dispatchers.Main).launch {
+            while(true){
+              messageChannel.send("Hello from Android 🤖")
+              delay(3000)
+            }
+          }
+        }
+      }
+      "stopTimer" -> {
+        timer?.cancel()
+        timer = null
       }
       else -> {
         result.notImplemented()

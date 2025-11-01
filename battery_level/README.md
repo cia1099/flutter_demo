@@ -7,6 +7,7 @@
 flutter create --org com.cia1099 --template=plugin --platforms=android,ios battery_level
 ```
 [Example references](https://docs.flutter.dev/platform-integration/platform-channels#example)
+[platform channels doc](https://docs.flutter.dev/platform-integration/platform-channels)
 
 ## iOS platform
 例如Swift的插件的代码都写在`ios/Classes/`这个路径下，再将所有的逻辑统一注册在一开始就生成的类`ios/Classes/BatteryLevelPlugin.swift`

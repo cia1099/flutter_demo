@@ -1,0 +1,11 @@
+[project]
+name = "onnx_yolo"
+version = "0.1.0"
+description = "Run Ort model on Python"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "opencv-python",
+    "onnxruntime",
+    "pyyaml"
+]

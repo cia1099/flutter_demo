@@ -1,10 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:onnx_yolo/detect_page.dart';
+import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
+import 'package:onnx_yolo/pages/dev_page.dart';
 import 'package:statsfl/statsfl.dart';
 
 import 'frosted_button.dart';
+import 'pages/detect_page.dart';
 
 void main() {
   runApp(
@@ -35,7 +37,8 @@ class MyApp extends StatelessWidget {
       // ),
       // showPerformanceOverlay: true,
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'YOLO Demo Home Page'),
+      // home: const MyHomePage(title: 'YOLO Demo Home Page'),
+      home: const DevPage(),
     );
   }
 }
@@ -82,6 +85,15 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               icon: CupertinoIcons.camera,
               size: 100,
+            ),
+            CupertinoButton(
+              onPressed: () {
+                final ort = OnnxRuntime();
+                ort.getAvailableProviders().then((providers) {
+                  print('Available providers: $providers');
+                });
+              },
+              child: Text("Look EP"),
             ),
           ],
         ),

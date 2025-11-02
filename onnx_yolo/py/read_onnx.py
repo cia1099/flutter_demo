@@ -12,7 +12,7 @@ input_name = session.get_inputs()[0].name
 output_name = session.get_outputs()[0].name
 
 # ---------- 2. 前处理 ----------
-img_path = "img/bus.jpg"
+img_path = "../assets/bus.jpg"
 orig_img = cv2.imread(img_path)
 h0, w0 = orig_img.shape[:2]
 

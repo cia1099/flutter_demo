@@ -7,10 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onnx_yolo/ort_yolo.dart';
 
-import 'frosted_button.dart';
-import 'non_maximum_suppression.dart';
-import 'utils/constants.dart';
-import 'utils/yuv2rgba_converter.dart';
+import '../frosted_button.dart';
+import '../non_maximum_suppression.dart';
+import '../utils/constants.dart';
+import '../utils/yuv2rgba_converter.dart';
 
 class DetectPage extends StatefulWidget {
   final CameraDescription camera;
@@ -132,14 +132,10 @@ class _DetectPageState extends State<DetectPage> {
 // MARK: CameraPainter
 class CameraPainter extends CustomPainter {
   final ui.Image frame;
-  final CameraDescription camera;
   final bool isAndroid;
+  final CameraDescription? camera;
 
-  CameraPainter({
-    required this.frame,
-    required this.camera,
-    required this.isAndroid,
-  });
+  CameraPainter({required this.frame, required this.isAndroid, this.camera});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -150,7 +146,7 @@ class CameraPainter extends CustomPainter {
       canvas.translate(size.width / 2, size.height / 2);
 
       // 旋转 90°（顺时针为正，逆时针传负值）
-      canvas.rotate(camera.sensorOrientation * math.pi / 180);
+      canvas.rotate((camera?.sensorOrientation ?? 90) * math.pi / 180);
 
       // 再把坐标系移回去（因为前面移动了中心）
       canvas.translate(-size.height / 2, -size.width / 2);

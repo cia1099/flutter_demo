@@ -4,6 +4,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
+import 'package:onnx_yolo/mock_tensor.dart';
+
+// import 'package:path/path.dart' as p;
 
 import 'non_maximum_suppression.dart' as nms;
 import 'utils/extension.dart';
@@ -34,7 +37,7 @@ class OrtYolo {
       );
       session = await onnx.createSessionFromAsset(
         "assets/models/yolo11n.ort",
-        options: options,
+        // options: options,
       );
       _completer.complete(true);
     } catch (e) {
@@ -61,25 +64,34 @@ class OrtYolo {
     final input = await img.toFloat32NCHW();
     final preProcess = (sw..stop()).elapsedMilliseconds;
 
-    final inputOrt = await OrtValue.fromList(input, [
-      1,
-      3,
-      inputSize,
-      inputSize,
-    ]);
-
     (sw..reset()).start();
-    final outputOrt = await session.run({"images": inputOrt});
-    inputOrt.dispose();
+    // final inputOrt = await OrtValue.fromList(input, [
+    //   1,
+    //   3,
+    //   inputSize,
+    //   inputSize,
+    // ]);
+    // final outputOrt = await session.run({"images": inputOrt});
+    // inputOrt.dispose();
+
+    // final outTensor = (await outputOrt['output0']?.asList())
+    //     ?.cast<List>() // List<List<List>>
+    //     .map((e) => (e).map((x) => (x as List).cast<double>()).toList())
+    //     .toList();
+    // for (var element in outputOrt.values) {
+    //   element.dispose();
+    // }
+    final outTensor = await isReady ? mockTensor : null;
     final predTime = (sw..stop()).elapsedMilliseconds;
 
-    final outTensor = (await outputOrt['output0']?.asList())
-        ?.cast<List>() // List<List<List>>
-        .map((e) => (e).map((x) => (x as List).cast<double>()).toList())
-        .toList();
-    for (var element in outputOrt.values) {
-      element.dispose();
-    }
+    //----write mock data
+    // if (await MyDB().isReady) {
+    //   final path = p.join(MyDB().appDirectory, "outTensor.txt");
+    //   final file = File(path);
+    //   file.writeAsString(
+    //     "const List<List<List<double>>> mockTensor = [${outTensor?[0].map((e) => e.map((d) => ((d * 1e3).roundToDouble() * 1e-3).toStringAsPrecision(2)).toList()).toList()}];",
+    //   );
+    // }
 
     // MARK: - Mock Yolo output
     (sw..reset()).start();
@@ -112,7 +124,7 @@ class OrtYolo {
     var selectedBoxes = <nms.BoundingBox>[];
     // if (outTensor?[0] != null) {
     final channels = outTensor[0].transpose();
-    outTensor.clear();
+    // outTensor.clear();
     final anchorProbs = channels
         .map((c) => c.skip(4).reduce(math.max))
         .toList();

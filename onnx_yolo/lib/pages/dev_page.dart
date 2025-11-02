@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
+import 'package:onnx_yolo/my_db.dart';
 import 'package:onnx_yolo/utils/image.dart';
 
 import '../frosted_button.dart';
@@ -102,5 +103,6 @@ class _DevPageState extends State<DevPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     await image;
+    await MyDB().isReady;
   }
 }

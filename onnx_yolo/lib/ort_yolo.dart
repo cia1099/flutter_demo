@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
-import 'package:onnx_yolo/mock_tensor.dart';
 
 // import 'package:path/path.dart' as p;
 
@@ -65,24 +64,35 @@ class OrtYolo {
     final preProcess = (sw..stop()).elapsedMilliseconds;
 
     (sw..reset()).start();
-    // final inputOrt = await OrtValue.fromList(input, [
-    //   1,
-    //   3,
-    //   inputSize,
-    //   inputSize,
-    // ]);
-    // final outputOrt = await session.run({"images": inputOrt});
-    // inputOrt.dispose();
+    final inputOrt = await OrtValue.fromList(input, [
+      1,
+      3,
+      inputSize,
+      inputSize,
+    ]);
 
-    // final outTensor = (await outputOrt['output0']?.asList())
-    //     ?.cast<List>() // List<List<List>>
-    //     .map((e) => (e).map((x) => (x as List).cast<double>()).toList())
-    //     .toList();
-    // for (var element in outputOrt.values) {
-    //   element.dispose();
-    // }
-    final outTensor = await isReady ? mockTensor : null;
+    final outputOrt = await session.run({"images": inputOrt});
     final predTime = (sw..stop()).elapsedMilliseconds;
+    inputOrt.dispose();
+
+    (sw..reset()).start();
+    // final fList = await outputOrt['output0']?.asFlattenedList();
+    // final outTensor = fList != null
+    //     ? [
+    //         List.generate(8400, (i) {
+    //           return List<double>.generate(64, (j) => fList[j * 8400 + i]);
+    //         }),
+    //       ]
+    //     : null;
+    final outTensor = (await outputOrt['output0']?.asList())
+        ?.cast<List>() // List<List<List>>
+        .map((e) => (e).map((x) => (x as List).cast<double>()).toList())
+        .toList();
+    for (var element in outputOrt.values) {
+      element.dispose();
+    }
+    // final outTensor = await isReady ? mockTensor : null;
+    final fetchTime = (sw..stop()).elapsedMilliseconds;
 
     //----write mock data
     // if (await MyDB().isReady) {
@@ -95,9 +105,8 @@ class OrtYolo {
 
     // MARK: - Mock Yolo output
     (sw..reset()).start();
-    if (outTensor == null) {
-      return [];
-    }
+    if (outTensor == null) return [];
+
     final selectedBoxes = nonMaximumSuppress(
       outTensor,
       confThreshold,
@@ -105,7 +114,7 @@ class OrtYolo {
     );
     final postProcess = (sw..stop()).elapsedMilliseconds;
     debugPrint(
-      "Elapsed time - preprocess:${preProcess}ms, inference:${predTime}ms, postprocess:${postProcess}ms",
+      "Elapsed time - preprocess:${preProcess}ms, inference:${predTime}ms, fetch:${fetchTime}ms, postprocess:${postProcess}ms",
     );
     return selectedBoxes;
   }
@@ -124,6 +133,7 @@ class OrtYolo {
     var selectedBoxes = <nms.BoundingBox>[];
     // if (outTensor?[0] != null) {
     final channels = outTensor[0].transpose();
+    // final channels = outTensor[0]; //.transpose();
     // outTensor.clear();
     final anchorProbs = channels
         .map((c) => c.skip(4).reduce(math.max))

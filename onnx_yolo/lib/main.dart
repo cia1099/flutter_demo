@@ -6,6 +6,7 @@ import 'package:statsfl/statsfl.dart';
 
 import 'frosted_button.dart';
 import 'pages/detect_page.dart';
+import 'pages/dev_page.dart';
 
 void main() {
   runApp(
@@ -36,8 +37,8 @@ class MyApp extends StatelessWidget {
       // ),
       // showPerformanceOverlay: true,
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'YOLO Demo Home Page'),
-      // home: const DevPage(),
+      // home: const MyHomePage(title: 'YOLO Demo Home Page'),
+      home: const DevPage(),
     );
   }
 }

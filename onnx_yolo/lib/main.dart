@@ -92,7 +92,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => DetectPage(camera: cameras.last),
+                      builder: (context) => DetectPage(
+                        camera: cameras.firstWhere(
+                          (c) => c.lensDirection == CameraLensDirection.back,
+                        ),
+                      ),
                       fullscreenDialog: true,
                       settings: RouteSettings(name: "detect"),
                     ),

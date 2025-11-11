@@ -5,8 +5,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
 
-// import 'package:path/path.dart' as p;
-
 import 'non_maximum_suppression.dart' as nms;
 import 'utils/extension.dart';
 
@@ -27,15 +25,16 @@ class OrtYolo {
   Future<void> _init() async {
     final onnx = OnnxRuntime();
     try {
-      final options = OrtSessionOptions(
-        // providers: [OrtProvider.NNAPI],
-        // intraOpNumThreads: 0,
-        // interOpNumThreads: 0,
-        providers: [OrtProvider.CORE_ML],
-        useArena: true,
-      );
+      // final options = OrtSessionOptions(
+      //   // providers: [OrtProvider.NNAPI],
+      //   // intraOpNumThreads: 1,
+      //   // interOpNumThreads: 0,
+      //   // providers: [OrtProvider.CORE_ML],
+      //   useArena: true,
+      // );
       session = await onnx.createSessionFromAsset(
         "assets/models/yolo11n.ort",
+        // "assets/models/yolo11n_qlinear.ort",
         // options: options,
       );
       _completer.complete(true);
@@ -76,18 +75,19 @@ class OrtYolo {
     inputOrt.dispose();
 
     (sw..reset()).start();
-    // final fList = await outputOrt['output0']?.asFlattenedList();
-    // final outTensor = fList != null
-    //     ? [
-    //         List.generate(8400, (i) {
-    //           return List<double>.generate(64, (j) => fList[j * 8400 + i]);
-    //         }),
-    //       ]
-    //     : null;
-    final outTensor = (await outputOrt['output0']?.asList())
-        ?.cast<List>() // List<List<List>>
-        .map((e) => (e).map((x) => (x as List).cast<double>()).toList())
-        .toList();
+    final fList = await outputOrt['output0']?.asFlattenedList();
+    final outTensor = fList != null
+        ? [
+            List.generate(8400, (i) {
+              return List<double>.generate(64, (j) => fList[j * 8400 + i]);
+            }),
+          ]
+        : null;
+    //---- older 1x64x8400 shape
+    // final outTensor = (await outputOrt['output0']?.asList())
+    //     ?.cast<List>() // List<List<List>>
+    //     .map((e) => (e).map((x) => (x as List).cast<double>()).toList())
+    //     .toList();
     for (var element in outputOrt.values) {
       element.dispose();
     }
@@ -132,8 +132,8 @@ class OrtYolo {
   ) {
     var selectedBoxes = <nms.BoundingBox>[];
     // if (outTensor?[0] != null) {
-    final channels = outTensor[0].transpose();
-    // final channels = outTensor[0]; //.transpose();
+    // final channels = outTensor[0].transpose();
+    final channels = outTensor[0];
     // outTensor.clear();
     final anchorProbs = channels
         .map((c) => c.skip(4).reduce(math.max))

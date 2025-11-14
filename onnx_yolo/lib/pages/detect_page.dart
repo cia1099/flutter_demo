@@ -226,7 +226,14 @@ class BoxesPainter extends CustomPainter {
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      textPainter.paint(canvas, rect.topLeft - Offset(0, textPainter.height));
+      final labelTL = rect.topLeft - Offset(0, textPainter.height);
+      canvas.drawRect(
+        labelTL & textPainter.size,
+        Paint()
+          ..color = Colors.green
+          ..style = PaintingStyle.fill,
+      );
+      textPainter.paint(canvas, labelTL);
     }
   }
 
